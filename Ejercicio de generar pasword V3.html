@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Contraseñas Seguras</title>
+    <style>
+        body {
+            background-color: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+        }
+        .password-box {
+            background: #e5e7eb;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .strength {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Generador de Contraseñas Seguras</h2>
+        <label>Longitud: <span id="lengthValue">12</span></label>
+        <input type="range" id="length" min="8" max="64" value="12" oninput="updateLengthValue()">
+        <br>
+        <input type="checkbox" id="specialChars" checked>
+        <label for="specialChars">Incluir caracteres especiales</label>
+        <br>
+        <button onclick="generatePassword()">Generar Contraseña</button>
+        <div class="password-box">
+            <input type="text" id="password" readonly>
+            <button onclick="copyPassword()">📋</button>
+        </div>
+        <div id="strength" class="strength"></div>
+    </div>
+    
+    <script>
+        function updateLengthValue() {
+            document.getElementById("lengthValue").textContent = document.getElementById("length").value;
+        }
+
+        function generatePassword() {
+            const length = parseInt(document.getElementById("length").value);
+            const includeSpecialChars = document.getElementById("specialChars").checked;
+            let chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            if (includeSpecialChars) chars += "!@#$%^&*()_+[]{}|;:,.<>?";
+            
+            let password = "";
+            for (let i = 0; i < length; i++) {
+                password += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            document.getElementById("password").value = password;
+            evaluateStrength(password);
+        }
+        
+        function evaluateStrength(password) {
+            const strengthLevels = ["Débil ❌", "Débil ❌", "Media ⚠️", "Fuerte ✅", "Muy fuerte 💪"];
+            let score = 0;
+            if (password.length >= 12) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^a-zA-Z0-9]/.test(password)) score++;
+            document.getElementById("strength").textContent = strengthLevels[score];
+        }
+
+        function copyPassword() {
+            const passwordField = document.getElementById("password");
+            passwordField.select();
+            document.execCommand("copy");
+            alert("Contraseña copiada");
+        }
+    </script>
+</body>
+</html>
